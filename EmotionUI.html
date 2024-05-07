@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emotions Tracking Application</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+        crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background-color: #f2f2f2;
+        }
+
+        .container {
+            max-width: 1200px;
+        }
+
+        #myPieChart {
+            width: 100%;
+            max-width: 800px;
+            height: auto;
+            max-height: 800px;
+        }
+
+        .emotion-slider {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 15px;
+            border-radius: 5px;
+            background: #d3d3d3;
+            outline: none;
+            opacity: 0.7;
+            -webkit-transition: .2s;
+            transition: opacity .2s;
+        }
+
+        .emotion-slider:hover {
+            opacity: 1;
+        }
+
+        .emotion-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            background: #4CAF50;
+            cursor: pointer;
+        }
+
+        .emotion-slider::-moz-range-thumb {
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            background: #4CAF50;
+            cursor: pointer;
+        }
+
+        .card {
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn {
+            border-radius: 20px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            transform: scale(1.05);
+        }
+
+        .form-control,
+        .form-select {
+            border-radius: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container py-5">
+        <!-- Header -->
+        <div class="text-center mb-5">
+            <h1 class="display-4 fw-bold">Emotion Tracking</h1>
+            <p class="lead">Monitor and manage your emotional well-being.</p>
+        </div>
+
+        <!-- Emotion Tracker Section -->
+        <div class="row">
+            <div class="col-md-8">
+                <div class="card shadow p-4 mb-5 bg-body rounded">
+                    <h2 class="text-center mb-4">Emotion Tracker</h2>
+                    <div class="form-group">
+                        <label for="emotionH" class="form-label">Select Emotion:</label>
+                        <select id="emotionH" class="form-select">
+                            <option>Anger</option>
+                            <option>Enjoyment</option>
+                            <option>Sadness</option>
+                            <option>Contempt</option>
+                            <option>Disgust</option>
+                            <option>Fear</option>
+                            <option>Surprise</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="timeRangeH" class="form-label">Select Time Range:</label>
+                        <select id="timeRangeH" class="form-select">
+                            <option>1 day</option>
+                            <option>1 week</option>
+                            <option>1 month</option>
+                            <option>1 year</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="groupByH" class="form-label">Group By:</label>
+                        <select id="groupByH" class="form-select">
+                            <option>Day</option>
+                            <option>Week</option>
+                            <option>Month</option>
+                        </select>
+                    </div>
+                    <button id="updateChartH" class="btn btn-primary"><i class="fas fa-chart-pie"></i> Update Chart</button>
+                </div>
+
+                <div class="card shadow p-4 mb-5 bg-body rounded">
+                    <canvas id="myPieChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Emotion Input Section -->
+            <div class="col-md-4">
+                <div class="card shadow p-4 mb-5 bg-body rounded">
+                    <div class="text-center mb-4">
+                        <h2 class="fw-bold">Sign In or Register</h2>
+                        <button type="button" class="btn btn-info" data-bs-toggle="modal"
+                            data-bs-target="#loginRegisterModal"><i class="fas fa-sign-in-alt"></i> Sign In</button>
+                        <button type="button" class="btn btn-info" data-bs-toggle="modal"
+                            data-bs-target="#loginRegisterModal"><i class="fas fa-user-plus"></i> Register</button>
+                    </div>
+                    <hr>
+                    <div class="text-center mb-4">
+                        <h2 class="fw-bold">Enter your emotions</h2>
+                    </div>
+                    <form id="emotionForm">
+                        <div class="mb-3">
+                            <label for="anger" class="form-label">Anger:</label>
+                            <input type="range" class="form-range emotion-slider" id="anger" min="0" max="10"
+                                value="5">
+                        </div>
+                        <div class="mb-3">
+                            <label for="enjoyment" class="form-label">Enjoyment:</label>
+                            <input type="range" class="form-range emotion-slider" id="enjoyment" min="0" max="10"
+                                value="5">
+                        </div>
+                        <div class="mb-3">
+                            <label for="sadness" class="form-label">Sadness:</label>
+                            <input type="range" class="form-range emotion-slider" id="sadness" min="0" max="10"
+                                value="5">
+                        </div>
+                        <div class="mb-3">
+                            <label for="contempt" class="form-label">Contempt:</label>
+                            <input type="range" class="form-range emotion-slider" id="contempt" min="0" max="10"
+                                value="5">
+                        </div>
+                        <div class="mb-3">
+                            <label for="disgust" class="form-label">Disgust:</label>
+                            <input type="range" class="form-range emotion-slider" id="disgust" min="0" max="10"
+                                value="5">
+                        </div>
+                        <div class="mb-3">
+                            <label for="fear" class="form-label">Fear:</label>
+                            <input type="range" class="form-range emotion-slider" id="fear" min="0" max="10"
+                                value="5">
+                        </div>
+                        <div class="mb-3">
+                            <label for="surprise" class="form-label">Surprise:</label>
+                            <input type="range" class="form-range emotion-slider" id="surprise" min="0" max="10"
+                                value="5">
+                        </div>
+                        <button type="submit" class="btn btn-primary"><i class="fas fa-check"></i> Submit</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Login/Register Modal -->
+    <div class="modal fade" id="loginRegisterModal" tabindex="-1" aria-labelledby="loginRegisterModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="loginRegisterModalLabel">Login / Register</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Tab Navs -->
+                    <ul class="nav nav-tabs" id="loginRegisterTab" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="login-tab" data-bs-toggle="tab"
+                                data-bs-target="#login" type="button" role="tab" aria-controls="login"
+                                aria-selected="true">Login</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="register-tab" data-bs-toggle="tab"
+                                data-bs-target="#register" type="button" role="tab" aria-controls="register"
+                                aria-selected="false">Register</button>
+                        </li>
+                    </ul>
+                    <!-- Tab Panes -->
+                    <div class="tab-content" id="loginRegisterTabContent">
+                        <div class="tab-pane fade show active" id="login" role="tabpanel"
+                            aria-labelledby="login-tab">
+                            <!-- Login Form -->
+                            <div id="loginErrorMessage" class="alert alert-danger d-none" role="alert"></div>
+
+                            <form class="p-4" id="loginForm">
+                                <div class="mb-3">
+                                    <label for="loginEmail" class="form-label">Email address</label>
+                                    <input type="email" class="form-control" id="loginEmail" required
+                                        pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+                                        title="Please enter a valid email address.">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="loginPassword" class="form-label">Password</label>
+                                    <input type="password" class="form-control" id="loginPassword" required
+                                        minlength="6" title="Password must be at least 6 characters long.">
+                                </div>
+                                <button type="submit" class="btn btn-primary" id="loginSubmit"><i class="fas fa-sign-in-alt"></i> Login</button>
+                            </form>
+                        </div>
+                        <div class="tab-pane fade" id="register" role="tabpanel" aria-labelledby="register-tab">
+                            <!-- Register Form -->
+                            <form class="p-4" id="registerForm">
+                                <div class="mb-3">
+                                    <label for="registerName" class="form-label">Name</label>
+                                    <input type="text" class="form-control" id="registerName" required
+                                        pattern="[A-Za-z\s]+" title="Name should only contain letters.">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="registerEmail" class="form-label">Email address</label>
+                                    <input type="email" class="form-control" id="registerEmail" required
+                                        pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+                                        title="Please enter a valid email address.">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="registerPassword" class="form-label">Password</label>
+                                    <input type="password" class="form-control" id="registerPassword" required
+                                        minlength="6" title="Password must be at least 6 characters long.">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="registerAge" class="form-label">Age</label>
+                                    <input type="number" class="form-control" id="registerAge" required min="18"
+                                        title="You must be at least 18 years old.">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="registerGender" class="form-label">Gender</label>
+                                    <select class="form-select" id="registerGender" required>
+                                        <option selected disabled value="">Choose...</option>
+                                        <option>Male</option>
+                                        <option>Female</option>
+                                        <option>Other</option>
+                                    </select>
+                                </div>
+                                <button type="submit" class="btn btn-primary" id="registerSubmit"><i class="fas fa-user-plus"></i> Register</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="fas fa-times"></i> Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const data = {
+            labels: ['Anger', 'Enjoyment', 'Sadness', 'Contempt', 'Disgust', 'Fear', 'Surprise'],
+            datasets: [{
+                label: 'Emotion Tracker',
+                data: [20, 30, 10, 5, 15, 10, 20],
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.5)',
+                    'rgba(54, 162, 235, 0.5)',
+                    'rgba(255, 206, 86, 0.5)',
+                    'rgba(75, 192, 192, 0.5)',
+                    'rgba(153, 102, 255, 0.5)',
+                    'rgba(255, 159, 64, 0.5)',
+                    'rgba(255, 99, 132, 0.5)'
+                ],
+                borderColor: [
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(153, 102, 255, 1)',
+                    'rgba(255, 159, 64, 1)',
+                    'rgba(255, 99, 132, 1)'
+                ],
+                borderWidth: 1
+            }]
+        };
+
+        const config = {
+            type: 'pie',
+            data: data,
+            options: {
+                responsive: true,
+                plugins: {
+                        title: 
+                        {
+                            display: true,
+                            text: 'Emotion Tracker',
+                            font: {
+                                size: 24,
+                                weight: 'bold'
+                            }
+                        },
+                        legend: {
+                            position: 'right',
+                            labels: {
+                                font: {
+                                    size: 16
+                                }
+                            }
+                        }
+                    }
+                }
+            };
+
+        var myChart = new Chart(
+            document.getElementById('myPieChart'),
+            config
+        );
+
+        // Event listener for the 'Update Chart' button
+        document.getElementById('updateChartH').addEventListener('click', function() {
+            const selectedEmotion = document.getElementById('emotionH').value;
+            const selectedTimeRange = document.getElementById('timeRangeH').value;
+            const selectedGroupBy = document.getElementById('groupByH').value;
+
+            // Fetch updated data from the server or generate sample data
+            const updatedData = generateUpdatedData(selectedEmotion, selectedTimeRange, selectedGroupBy);
+
+            // Update the chart with the new data
+            myChart.data.datasets[0].data = updatedData;
+            myChart.update();
+        });
+
+        function generateUpdatedData(emotion, timeRange, groupBy) {
+            // Implement logic to fetch or generate updated data based on the selected options
+            // This is just a sample implementation with random data
+            const data = [];
+            for (let i = 0; i < 7; i++) {
+                data.push(Math.floor(Math.random() * 50));
+            }
+            return data;
+        }
+
+        // Event listener for the emotion form submission
+        document.getElementById('emotionForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const anger = document.getElementById('anger').value;
+            const enjoyment = document.getElementById('enjoyment').value;
+            const sadness = document.getElementById('sadness').value;
+            const contempt = document.getElementById('contempt').value;
+            const disgust = document.getElementById('disgust').value;
+            const fear = document.getElementById('fear').value;
+            const surprise = document.getElementById('surprise').value;
+
+            // Implement logic to save the emotion data to the server
+            console.log('Emotion data:', {
+                anger,
+                enjoyment,
+                sadness,
+                contempt,
+                disgust,
+                fear,
+                surprise
+            });
+
+            // Reset the form
+            this.reset();
+        });
+
+        // Event listener for the login form submission
+        document.getElementById('loginForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+
+            // Implement logic to authenticate the user
+            // If the login is successful, you can redirect the user or update the UI accordingly
+            // If the login fails, display an error message
+            const loginErrorMessage = document.getElementById('loginErrorMessage');
+            if (email === 'test@example.com' && password === 'password') {
+                loginErrorMessage.classList.add('d-none');
+                // Successful login
+            } else {
+                loginErrorMessage.classList.remove('d-none');
+                loginErrorMessage.textContent = 'Invalid email or password.';
+            }
+        });
+
+        // Event listener for the register form submission
+        document.getElementById('registerForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const name = document.getElementById('registerName').value;
+            const email = document.getElementById('registerEmail').value;
+            const password = document.getElementById('registerPassword').value;
+            const age = document.getElementById('registerAge').value;
+            const gender = document.getElementById('registerGender').value;
+
+            // Implement logic to register the user
+            console.log('Registered user:', {
+                name,
+                email,
+                password,
+                age,
+                gender
+            });
+
+            // Reset the form
+            this.reset();
+        });
+    </script>
+</body>
+
+</html>
